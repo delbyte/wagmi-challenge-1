@@ -1,12 +1,15 @@
 [package]
-name = "wagmi-challenge-1"
+name = "wagmi-9000"
 version = "0.1.0"
 edition = "2021"
 
 [dependencies]
-actix-web = "4.9"  # Latest stable version for performance
-serde = { version = "1.0", features = ["derive"] }  # JSON serialization
-chrono = "0.4"  # UTC timestamps
-serde_json = "1.0.140"
-tokio = "1.45.0"
-sonic-rs = "0.5.1"
+actix-web = "4.9"
+sonic-rs = "0.4"   
+chrono = "0.4"     
+tokio = { version = "1.40", features = ["sync", "time"] }  
+
+[profile.release]
+opt-level = 3    
+lto = "fat"      
+codegen-units = 1
