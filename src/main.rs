@@ -104,7 +104,7 @@ async fn main() -> std::io::Result<()> {
     })
     .workers(1)
     .max_connections(6000)
-    .bind(format!("0.0.0.0:{}", port))?
+    .bind(format!("[::]:{}", port))?
     .run()
     .await
 }
