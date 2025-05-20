@@ -1,13 +1,29 @@
-FROM rust:1.73.0-slim AS builder
-WORKDIR /usr/src/wagmi-9000
-COPY Cargo.toml .
-COPY Cargo.lock .
+# Build stage
+FROM rust:1.82-slim-buster AS builder
+
+# Set the working directory
+WORKDIR /app
+
+# Copy the Cargo.toml and Cargo.lock files
+COPY Cargo.toml Cargo.lock ./
+
+# Copy the source code
 COPY src ./src
-RUN apt-get update && apt-get upgrade -y && apt-get install -y --no-install-recommends build-essential pkg-config libssl-dev && rm -rf /var/lib/apt/lists/*
+
+# Build the application in release mode
 RUN cargo build --release
 
-FROM debian:slim
-RUN apt-get update && apt-get upgrade -y && apt-get install -y --no-install-recommends ca-certificates && rm -rf /var/lib/apt/lists/*
-COPY --from=builder /usr/src/wagmi-9000/target/release/wagmi-9000 /usr/local/bin/wagmi-9000
+# Final stage
+FROM debian:buster-slim
+
+# Install necessary runtime dependencies for Actix-web (OpenSSL)
+RUN apt-get update && apt-get install -y libssl-dev ca-certificates && rm -rf /var/lib/apt/lists/*
+
+# Copy the built binary from the builder stage
+COPY --from=builder /app/target/release/wagmi-9000 /usr/local/bin/wagmi-9000
+
+# Expose the default port (for documentation)
 EXPOSE 8000
+
+# Run the application
 CMD ["wagmi-9000"]
