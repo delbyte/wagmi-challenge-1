@@ -1,6 +1,6 @@
 use actix_web::{post, web, App, HttpResponse, HttpServer, Responder};
 use chrono::Utc;
-use sonic_rs::{Deserialize, Serialize, Value, JsonValueTrait, JsonNumberTrait};
+use serde::{Deserialize, Serialize};
 use std::time::SystemTime;
 use tokio::sync::RwLock;
 use once_cell::sync::Lazy;
@@ -24,11 +24,11 @@ struct PingResponse {
     lang: &'static str,
 }
 
-// Request struct
+// Request struct - using serde instead of sonic-rs
 #[derive(Deserialize)]
 struct WagmiRequest {
-    a: Option<Value>,
-    b: Option<Value>,
+    a: Option<f64>,
+    b: Option<f64>,
 }
 
 // Response structs
@@ -71,19 +71,15 @@ async fn wagmi_handler(body: web::Json<WagmiRequest>) -> impl Responder {
     }
 
     // Addition request
-    if let (Some(a_val), Some(b_val)) = (&body.a, &body.b) {
-        let a_opt = a_val.as_number().and_then(|n| n.as_f64());
-        let b_opt = b_val.as_number().and_then(|n| n.as_f64());
-        if let (Some(a), Some(b)) = (a_opt, b_opt) {
-            if a >= 0.0 && b >= 0.0 && a + b <= 100.0 {
-                let response = AddResponse {
-                    result: a + b,
-                    a,
-                    b,
-                    status: "success",
-                };
-                return HttpResponse::Ok().json(response);
-            }
+    if let (Some(a), Some(b)) = (body.a, body.b) {
+        if a >= 0.0 && b >= 0.0 && a + b <= 100.0 {
+            let response = AddResponse {
+                result: a + b,
+                a,
+                b,
+                status: "success",
+            };
+            return HttpResponse::Ok().json(response);
         }
     }
 
