@@ -1,5 +1,5 @@
 # Build stage
-FROM rust:1.82-slim-buster AS builder
+FROM rust:1.87-slim AS builder
 
 # Set the working directory
 WORKDIR /app
@@ -14,7 +14,7 @@ COPY src ./src
 RUN cargo build --release
 
 # Final stage
-FROM debian:buster-slim
+FROM debian:stable-slim
 
 # Install necessary runtime dependencies for Actix-web (OpenSSL)
 RUN apt-get update && apt-get install -y libssl-dev ca-certificates && rm -rf /var/lib/apt/lists/*
