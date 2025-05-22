@@ -17,6 +17,75 @@ My solution is built with Rust with an emphasis on concurrency and speed.
 - `main.rs` – CLI entrypoint that handles argument parsing and launches the load test.
 - `load_test.rs` – Script for stress testing main.rs with concurrent requests.
 
+Here’s an updated **Usage** section for your README that includes testing with `curl` against your deployed endpoint:
+
+---
+
+## Usage
+
+This project implements two main endpoints at:
+
+```
+POST https://wagmi-challenge-1-production.up.railway.app/wagmi
+```
+
+---
+
+### 🧪 1. **Ping Test Request**
+
+Send a `POST` with an empty JSON object `{}` to verify the server is online.
+
+#### ✅ Example:
+
+```bash
+curl -X POST https://wagmi-challenge-1-production.up.railway.app/wagmi \
+  -H "Content-Type: application/json" \
+  -d '{}'
+```
+
+#### 🔁 Response:
+
+```json
+{
+  "message": "wagmi",
+  "timestamp": "2025-05-18T12:00:00Z",
+  "lang": "Rust"
+}
+```
+
+---
+
+### ➕ 2. **Addition Request**
+
+Send two integers `a` and `b`. Returns their sum **only if** the result ≤ 100.
+
+#### ✅ Example:
+
+```bash
+curl -X POST https://wagmi-challenge-1-production.up.railway.app/wagmi \
+  -H "Content-Type: application/json" \
+  -d '{"a": 40, "b": 55}'
+```
+
+#### 🔁 Response:
+
+```json
+{
+  "result": 95,
+  "a": 40,
+  "b": 55,
+  "status": "success"
+}
+```
+
+#### ❌ Invalid Input (e.g. missing fields or result > 100):
+
+```json
+{
+  "error": "Invalid input"
+}
+```
+
 ## Features
 
 - Asynchronous requests with `tokio` and `reqwest`
